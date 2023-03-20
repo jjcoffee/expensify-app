@@ -11,6 +11,10 @@ workflows:
           vars:
             PACKAGE_NAME: "com.expensify.chat"
           node: v16.11.1
+        cache:
+          cache_paths:
+            - $HOME/.gradle/caches
+            - $CM_BUILD_DIR/node_modules
         scripts:
             - name: Install npm dependencies
               script: |
