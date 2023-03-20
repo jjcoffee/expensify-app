@@ -4,10 +4,10 @@ workflows:
         max_build_duration: 120
         instance_type: mac_mini_m1
         environment:
-          android_signing:
-            - keystore_reference
-          groups:
-            - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+          #android_signing:
+          #  - keystore_reference
+          #groups:
+          #  - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
           vars:
             PACKAGE_NAME: "com.expensify.chat"
           node: v16.11.1
