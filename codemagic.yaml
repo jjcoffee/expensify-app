@@ -43,14 +43,7 @@ workflows:
             - $HOME/.gradle/caches
             - $CM_BUILD_DIR/node_modules
         environment:
-          # ios_signing:
-          #   distribution_type: app_store
-          #   bundle_identifier: io.codemagic.sample.reactnative
-          vars:
-            XCODE_WORKSPACE: "ios/NewExpensify.xcworkspace" # <-- Put the name of your Xcode workspace here
-            XCODE_SCHEME: "NewExpensify" # <-- Put the name of your Xcode scheme here
-            APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
-          node: v16.11.1
+          node: v16.15.1
           xcode: latest
           cocoapods: default
         scripts:
