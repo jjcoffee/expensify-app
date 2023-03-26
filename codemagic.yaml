@@ -43,9 +43,9 @@ workflows:
             - $HOME/.gradle/caches
             - $CM_BUILD_DIR/node_modules
         environment:
-          ios_signing:
-            distribution_type: app_store
-            bundle_identifier: io.codemagic.sample.reactnative
+          # ios_signing:
+          #   distribution_type: app_store
+          #   bundle_identifier: io.codemagic.sample.reactnative
           vars:
             XCODE_WORKSPACE: "ios/NewExpensify.xcworkspace" # <-- Put the name of your Xcode workspace here
             XCODE_SCHEME: "NewExpensify" # <-- Put the name of your Xcode scheme here
