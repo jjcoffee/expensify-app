@@ -44,6 +44,7 @@ workflows:
             - $CM_BUILD_DIR/node_modules
         environment:
           node: v16.15.1
+          npm: v9.5.0
           xcode: latest
           cocoapods: default
         scripts:
