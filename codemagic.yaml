@@ -21,11 +21,11 @@ workflows:
               script: |
                 brew install nvm && nvm install
                 npm install
-            - name: Launch emulator
-              script: | 
-                cd $ANDROID_HOME/tools
-                emulator -avd emulator &
-                adb wait-for-device
+            # - name: Launch emulator
+            #   script: | 
+            #     cd $ANDROID_HOME/tools
+            #     emulator -avd emulator &
+            #     adb wait-for-device
             - name: Set Android SDK location
               script: |
                 echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties" 
