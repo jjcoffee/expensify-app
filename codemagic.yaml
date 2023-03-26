@@ -55,11 +55,12 @@ workflows:
             - name: Install CocoaPods dependencies
               script: |
                 cd ios && pod install && cd ..
-            - name: Build ipa for distribution
+            - name: Run the app
               script: |
-                npm run ios-build
+                npm run ios
         artifacts:
             - build/ios/ipa/*.ipa
+            - /*.ipa
             - /tmp/xcodebuild_logs/*.log
             - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
             - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
