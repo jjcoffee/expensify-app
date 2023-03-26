@@ -42,6 +42,7 @@ workflows:
           cache_paths:
             - $HOME/.gradle/caches
             - $CM_BUILD_DIR/node_modules
+            - $HOME/Library/Caches/CocoaPods
         environment:
           node: v16.15.1
           npm: v8.11.0
