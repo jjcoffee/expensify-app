@@ -95,7 +95,7 @@ workflows:
               success: true
               failure: false
           app_store_connect:
-            auth: integration
+            #auth: integration
 
             # Configuration related to App Store (optional)
             # Note: This action is performed during post-processing.
