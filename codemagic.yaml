@@ -29,14 +29,14 @@ workflows:
             - name: Set Android SDK location
               script: |
                 echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties" 
-            - name: Run test
-              script: |
-                npm run android           
-            # - name: Build Android release
+            # - name: Run test
             #   script: |
-            #     npm run android-build
+            #     npm run android
+            - name: Build Android release
+              script: |
+                npm run android-build
         artifacts:
-            - android/app/build/outputs/**/*.aab
+            - android/app/*.apk
     react-native-ios:
         name: React Native iOS
         max_build_duration: 120
