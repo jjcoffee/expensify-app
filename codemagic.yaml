@@ -83,3 +83,43 @@ workflows:
           #   # Configuration related to App Store (optional)
           #   # Note: This action is performed during post-processing.
           #   submit_to_app_store: false
+    react-native-mac:
+        name: React Native Mac
+        max_build_duration: 120
+        instance_type: mac_mini_m1
+        cache:
+          cache_paths:
+            - $HOME/.gradle/caches
+            - $CM_BUILD_DIR/node_modules
+            - $HOME/Library/Caches/CocoaPods
+        environment:
+          node: v16.15.1
+          npm: v8.11.0
+          xcode: latest
+          cocoapods: default
+        scripts:
+            - name: Install npm dependencies
+              script: |
+                brew install nvm && nvm install
+                npm install
+            - name: Install CocoaPods dependencies
+              script: |
+                cd ios && pod install && cd ..
+            - name: Run the web app
+              script: |
+                npm run web
+        artifacts:
+            - /tmp/xcodebuild_logs/*.log
+        publishing:
+          email:
+            recipients:
+              - joeld.dev@gmail.com
+            notify:
+              success: true
+              failure: false
+          # app_store_connect:
+          #   #auth: integration
+
+          #   # Configuration related to App Store (optional)
+          #   # Note: This action is performed during post-processing.
+          #   submit_to_app_store: false
