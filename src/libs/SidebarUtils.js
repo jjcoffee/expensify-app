@@ -5,7 +5,6 @@ import lodashOrderBy from 'lodash/orderBy';
 import Str from 'expensify-common/lib/str';
 import ONYXKEYS from '../ONYXKEYS';
 import * as ReportUtils from './ReportUtils';
-import * as ReportActionsUtils from './ReportActionsUtils';
 import * as Localize from './Localize';
 import CONST from '../CONST';
 import * as OptionsListUtils from './OptionsListUtils';
@@ -62,7 +61,7 @@ Onyx.connect({
             return;
         }
         const reportID = CollectionUtils.extractCollectionItemID(key);
-        lastReportActions[reportID] = _.first(ReportActionsUtils.getSortedReportActionsForDisplay(_.toArray(actions)));
+        lastReportActions[reportID] = _.last(_.toArray(actions));
         reportActions[key] = actions;
     },
 });
@@ -244,7 +243,12 @@ function getOptionData(reportID) {
     // We only create tooltips for the first 10 users or so since some reports have hundreds of users, causing performance to degrade.
     const displayNamesWithTooltips = ReportUtils.getDisplayNamesWithTooltips((participantPersonalDetailList || []).slice(0, 10), hasMultipleParticipants);
 
-    const lastMessageTextFromReport = ReportUtils.getLastMessageText(report);
+    let lastMessageTextFromReport = '';
+    if (ReportUtils.isReportMessageAttachment({text: report.lastMessageText, html: report.lastMessageHtml})) {
+        lastMessageTextFromReport = `[${Localize.translateLocal('common.attachment')}]`;
+    } else {
+        lastMessageTextFromReport = Str.htmlDecode(report ? report.lastMessageText : '');
+    }
 
     // If the last actor's details are not currently saved in Onyx Collection,
     // then try to get that from the last report action.
@@ -259,7 +263,7 @@ function getOptionData(reportID) {
     let lastMessageText = hasMultipleParticipants && lastActorDetails && (lastActorDetails.login !== currentUserLogin.email)
         ? `${lastActorDetails.displayName}: `
         : '';
-    lastMessageText += lastMessageTextFromReport;
+    lastMessageText += report ? lastMessageTextFromReport : '';
 
     if (result.isPolicyExpenseChat && result.isArchivedRoom) {
         const archiveReason = (lastReportActions[report.reportID] && lastReportActions[report.reportID].originalMessage && lastReportActions[report.reportID].originalMessage.reason)
@@ -271,9 +275,12 @@ function getOptionData(reportID) {
     }
 
     if (result.isChatRoom || result.isPolicyExpenseChat) {
-        result.alternateText = lastMessageText || subtitle;
+        // Checks to see if the current user is the admin of the policy tied to the policy expense chat,
+        // if so the policy name preview will be shown.
+        const isPolicyChatAdmin = result.isPolicyExpenseChat && ReportUtils.isPolicyExpenseChatAdmin(report, policies);
+        result.alternateText = isPolicyChatAdmin ? subtitle : (lastMessageText || Localize.translate(preferredLocale, 'report.noActivityYet'));
     } else {
-        if (hasMultipleParticipants && !lastMessageText) {
+        if (!lastMessageText) {
             // Here we get the beginning of chat history message and append the display name for each user, adding pronouns if there are any.
             // We also add a fullstop after the final name, the word "and" before the final name and commas between all previous names.
             lastMessageText = Localize.translate(preferredLocale, 'reportActionsView.beginningOfChatHistory')

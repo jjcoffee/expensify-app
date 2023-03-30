@@ -41,19 +41,8 @@ function isDeletedAction(reportAction) {
 }
 
 /**
- * @param {Object} reportAction
- * @returns {Boolean}
- */
-function isOptimisticAction(reportAction) {
-    return lodashGet(reportAction, 'pendingAction') === CONST.RED_BRICK_ROAD_PENDING_ACTION.ADD;
-}
-
-/**
- * Sort an array of reportActions by:
- *
- * - Finalized actions always are "later" than optimistic actions
- * - then sort by created timestamp
- * - then sort by reportActionID. This gives us a stable order even in the case of multiple reportActions created on the same millisecond
+ * Sort an array of reportActions by their created timestamp first, and reportActionID second
+ * This gives us a stable order even in the case of multiple reportActions created on the same millisecond
  *
  * @param {Array} reportActions
  * @param {Boolean} shouldSortInDescendingOrder
@@ -68,11 +57,6 @@ function getSortedReportActions(reportActions, shouldSortInDescendingOrder = fal
     return _.chain(reportActions)
         .compact()
         .sort((first, second) => {
-            // First, make sure that optimistic reportActions appear at the end
-            if (isOptimisticAction(second) && !isOptimisticAction(first)) {
-                return -1 * invertedMultiplier;
-            }
-
             // First sort by timestamp
             if (first.created !== second.created) {
                 return (first.created < second.created ? -1 : 1) * invertedMultiplier;
@@ -210,7 +194,7 @@ function getSortedReportActionsForDisplay(reportActions) {
     const sortedReportActions = getSortedReportActions(filteredReportActions, true);
     return _.filter(sortedReportActions, (reportAction) => {
         // Filter out any unsupported reportAction types
-        if (!_.has(CONST.REPORT.ACTIONS.TYPE, reportAction.actionName)) {
+        if (!_.has(CONST.REPORT.ACTIONS.TYPE, reportAction.actionName) && !_.contains(_.values(CONST.REPORT.ACTIONS.TYPE.POLICYCHANGELOG), reportAction.actionName)) {
             return false;
         }
 
@@ -229,11 +213,16 @@ function getSortedReportActionsForDisplay(reportActions) {
 /**
  * In some cases, there can be multiple closed report actions in a chat report.
  * This method returns the last closed report action so we can always show the correct archived report reason.
+ * Additionally, archived #admins and #announce do not have the closed report action so we will return null if none is found.
  *
  * @param {Object} reportActions
- * @returns {Object}
+ * @returns {Object|null}
  */
 function getLastClosedReportAction(reportActions) {
+    // If closed report action is not present, return early
+    if (!_.some(reportActions, action => action.actionName === CONST.REPORT.ACTIONS.TYPE.CLOSED)) {
+        return null;
+    }
     const filteredReportActions = filterOutDeprecatedReportActions(reportActions);
     const sortedReportActions = getSortedReportActions(filteredReportActions);
     return lodashFindLast(sortedReportActions, action => action.actionName === CONST.REPORT.ACTIONS.TYPE.CLOSED);
