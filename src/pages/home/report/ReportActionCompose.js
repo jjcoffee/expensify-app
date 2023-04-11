@@ -196,6 +196,7 @@ class ReportActionCompose extends React.Component {
             isEmojiPickerLarge: false,
             composerHeight: 0,
             hasExceededMaxCommentLength: false,
+            isFileSelectorOpen: false,
         };
     }
 
@@ -233,7 +234,7 @@ class ReportActionCompose extends React.Component {
         // We avoid doing this on native platforms since the software keyboard popping
         // open creates a jarring and broken UX.
         if (this.willBlurTextInputOnTapOutside && this.props.isFocused
-            && prevProps.modal.isVisible && !this.props.modal.isVisible) {
+            && prevProps.modal.isVisible && !this.props.modal.isVisible && !this.state.isFileSelectorOpen) {
             this.focus();
         }
 
@@ -785,8 +786,13 @@ class ReportActionCompose extends React.Component {
                                                         icon: Expensicons.Paperclip,
                                                         text: this.props.translate('reportActionCompose.addAttachment'),
                                                         onSelected: () => {
+                                                            this.setState({isFileSelectorOpen: true});
                                                             openPicker({
                                                                 onPicked: displayFileInModal,
+                                                                onFinishedPicking: () => {
+                                                                    this.setState({isFileSelectorOpen: false});
+                                                                    this.focus();
+                                                                },
                                                             });
                                                         },
                                                     },
