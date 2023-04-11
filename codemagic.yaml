@@ -84,7 +84,7 @@ workflows:
           #   # Note: This action is performed during post-processing.
           #   submit_to_app_store: false
     react-native-mac:
-        name: React Native Mac
+        name: React Native Mac Web
         max_build_duration: 120
         instance_type: mac_mini_m1
         cache:
