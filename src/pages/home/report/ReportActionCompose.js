@@ -788,7 +788,9 @@ class ReportActionCompose extends React.Component {
                                                         onSelected: () => {
                                                             this.setState({isFileSelectorOpen: true});
                                                             openPicker({
-                                                                onPicked: displayFileInModal,
+                                                                onPicked: () => {
+                                                                    this.setState({isFileSelectorOpen: false});
+                                                                },
                                                                 onFinishedPicking: () => {
                                                                     this.setState({isFileSelectorOpen: false});
                                                                     this.focus();
