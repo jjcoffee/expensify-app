@@ -53,27 +53,8 @@ class AttachmentPicker extends React.Component {
                     accept={getAcceptableFileTypes(this.props.type)}
                 />
                 {this.props.children({
-                    openPicker: ({onPicked, onFinishedPicking}) => {
-                        this.onPicked = (file) => {
-                            console.log('onpicked');
-                            console.log(this.fileInput.value)
-                            onPicked(file);
-                            window.removeEventListener('focus', this.onFinishedPicking);
-                        };
-                        const onFocus = () => {
-                            console.log('focus')
-                            window.removeEventListener('focus', onFocus);
-                            document.body.addEventListener('mousemove', this.onFinishedPicking);
-                        };
-                        this.onFinishedPicking = () => {
-                            console.log(this.fileInput.value);
-                            if ( this.fileInput.files.length === 0 ) {
-                                console.log('onfinishpicking');
-                                onFinishedPicking();
-                            }
-                            document.body.removeEventListener('mousemove', this.onFinishedPicking);
-                        };
-                        window.addEventListener('focus', onFocus);
+                    openPicker: ({onPicked}) => {
+                        this.onPicked = onPicked;
                         this.fileInput.click();
                     },
                 })}
