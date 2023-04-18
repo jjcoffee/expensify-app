@@ -206,7 +206,6 @@ class ReportActionCompose extends React.Component {
             isEmojiPickerLarge: false,
             composerHeight: 0,
             hasExceededMaxCommentLength: false,
-            isFileSelectorOpen: false,
         };
     }
 
@@ -244,7 +243,7 @@ class ReportActionCompose extends React.Component {
         // We avoid doing this on native platforms since the software keyboard popping
         // open creates a jarring and broken UX.
         if (this.willBlurTextInputOnTapOutside && this.props.isFocused
-            && prevProps.modal.isVisible && !this.props.modal.isVisible && !this.state.isFileSelectorOpen) {
+            && prevProps.modal.isVisible && !this.props.modal.isVisible) {
             this.focus();
         }
 
