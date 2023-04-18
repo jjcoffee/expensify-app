@@ -405,6 +405,10 @@ class ReportActionCompose extends React.Component {
      * Calculates and cares about the content of an Emoji Suggester
      */
     calculateEmojiSuggestion() {
+        if (this.state.filePickerOpen) {
+            this.setState({filePickerOpen: false});
+            return;
+        }
         const leftString = this.state.value.substring(0, this.state.selection.end);
         const colonIndex = leftString.lastIndexOf(':');
         const isCurrentlyShowingEmojiSuggestion = this.isEmojiCode(this.state.value, this.state.selection.end);
@@ -803,6 +807,7 @@ class ReportActionCompose extends React.Component {
                                                             icon: Expensicons.Paperclip,
                                                             text: this.props.translate('reportActionCompose.addAttachment'),
                                                             onSelected: () => {
+                                                                this.setState({filePickerOpen: true});
                                                                 openPicker({
                                                                     onPicked: displayFileInModal,
                                                                 });
