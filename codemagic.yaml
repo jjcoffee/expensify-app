@@ -4,6 +4,8 @@ workflows:
         max_build_duration: 120
         instance_type: mac_mini_m1
         environment:
+          groups: 
+            - mapbox_sdk
           #android_signing:
           #  - keystore_reference
           #groups:
@@ -21,6 +23,9 @@ workflows:
               script: |
                 brew install nvm && nvm install
                 npm install
+            - name: Set up Mapbox SDK
+              script: |
+                echo "MAPBOX_DOWNLOADS_TOKEN=$MAPBOX_SDK_KEY" > ~/.gradle/gradle.properties
             # - name: Launch emulator
             #   script: | 
             #     cd $ANDROID_HOME/tools
@@ -29,14 +34,16 @@ workflows:
             - name: Set Android SDK location
               script: |
                 echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties" 
-            # - name: Run test
-            #   script: |
-            #     npm run android
-            - name: Build Android release
+            - name: Run test
               script: |
-                npm run android-build
+                npm run android
+            # - name: Build Android release
+            #   script: |
+            #     npm run android-build
         artifacts:
             - android/app/*.apk
+            - android/app/build/outputs/apk/debug/*.apk
+            - android/app/build/outputs/apk/development/debug/*.apk
     react-native-ios:
         name: React Native iOS
         max_build_duration: 120
@@ -49,15 +56,81 @@ workflows:
             - $CM_BUILD_DIR/node_modules
             - $HOME/Library/Caches/CocoaPods
         environment:
+          groups: 
+            - mapbox_sdk
           node: v16.15.1
           npm: v8.11.0
-          xcode: latest
+          xcode: 14.2
           cocoapods: default
         scripts:
             - name: Install npm dependencies
               script: |
                 brew install nvm && nvm install
                 npm install
+            - name: Set up Mapbox SDK
+              script: |
+                echo "machine api.mapbox.com
+                      login mapbox
+                      password $MAPBOX_SDK_KEY" > ~/.netrc
+            - name: Install CocoaPods dependencies
+              script: |
+                cd ios && pod install && cd ..
+            - name: Run the app
+              script: |
+                npm run ios
+        artifacts:
+            - build/ios/ipa/*.ipa
+            - /*.ipa
+            - /tmp/xcodebuild_logs/*.log
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+        publishing:
+          email:
+            recipients:
+              - joeld.dev@gmail.com
+            notify:
+              success: true
+              failure: false
+          # app_store_connect:
+          #   #auth: integration
+
+          #   # Configuration related to App Store (optional)
+          #   # Note: This action is performed during post-processing.
+          #   submit_to_app_store: false
+    react-native-ios-pr:
+        name: React Native iOS - PR Review
+        max_build_duration: 120
+        instance_type: mac_mini_m1
+        # integrations:
+        #   app_store_connect: codemagic
+        cache:
+          cache_paths:
+            - $HOME/.gradle/caches
+            - $CM_BUILD_DIR/node_modules
+            - $HOME/Library/Caches/CocoaPods
+        environment:
+          groups: 
+            - mapbox_sdk
+            - github_vars
+          node: v16.15.1
+          npm: v8.11.0
+          xcode: 14.2
+          cocoapods: default
+        scripts:
+            - name: Checkout PR branch
+              script: |
+                git remote add upstream https://github.com/Expensify/App.git
+                git fetch upstream pull/$pull_request_no/head:test-branch
+                git checkout test-branch
+            - name: Install npm dependencies
+              script: |
+                brew install nvm && nvm install
+                npm install
+            - name: Set up Mapbox SDK
+              script: |
+                echo "machine api.mapbox.com
+                      login mapbox
+                      password $MAPBOX_SDK_KEY" > ~/.netrc
             - name: Install CocoaPods dependencies
               script: |
                 cd ios && pod install && cd ..
@@ -95,21 +168,21 @@ workflows:
         environment:
           node: v16.15.1
           npm: v8.11.0
-          xcode: latest
+          xcode: 14.2
           cocoapods: default
         scripts:
             - name: Install npm dependencies
               script: |
                 brew install nvm && nvm install
                 npm install
-            - name: Install CocoaPods dependencies
-              script: |
-                cd ios && pod install && cd ..
+            # - name: Install CocoaPods dependencies
+            #   script: |
+            #     cd ios && pod install && cd ..
             - name: Run the web app
               script: |
                 npm run web
-        artifacts:
-            - /tmp/xcodebuild_logs/*.log
+        # artifacts:
+        #     - /tmp/xcodebuild_logs/*.log
         publishing:
           email:
             recipients:
@@ -117,9 +190,3 @@ workflows:
             notify:
               success: true
               failure: false
-          # app_store_connect:
-          #   #auth: integration
-
-          #   # Configuration related to App Store (optional)
-          #   # Note: This action is performed during post-processing.
-          #   submit_to_app_store: false
