@@ -112,8 +112,8 @@ workflows:
           groups: 
             - mapbox_sdk
             - github_vars
-          node: v16.15.1
-          npm: v8.11.0
+          node: v20.9.0
+          npm: v10.1.0
           xcode: 14.2
           cocoapods: default
         scripts:
