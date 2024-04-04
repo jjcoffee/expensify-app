@@ -125,6 +125,7 @@ workflows:
             - name: Install npm dependencies
               script: |
                 brew install nvm && nvm install
+                bundle install
                 npm install
             - name: Set up Mapbox SDK
               script: |
@@ -133,7 +134,7 @@ workflows:
                       password $MAPBOX_SDK_KEY" > ~/.netrc
             - name: Install CocoaPods dependencies
               script: |
-                cd ios && pod install && cd ..
+                npm run pod-install
             - name: Run the app
               script: |
                 npm run ios
