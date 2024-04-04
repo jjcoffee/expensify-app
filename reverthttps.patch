@@ -1,0 +1,77 @@
+diff --git a/config/webpack/webpack.dev.ts b/config/webpack/webpack.dev.ts
+index 8f32a2d95c..e4b5aabf4c 100644
+--- a/config/webpack/webpack.dev.ts
++++ b/config/webpack/webpack.dev.ts
+@@ -49,9 +49,9 @@ const getConfiguration = (environment: Environment): Promise<Configuration> =>
+                 ...proxySettings,
+                 historyApiFallback: true,
+                 port,
+-                host: 'dev.new.expensify.com',
++                host: 'localhost',
+                 server: {
+-                    type: 'https',
++                    type: 'http',
+                     options: {
+                         key: path.join(__dirname, 'key.pem'),
+                         cert: path.join(__dirname, 'certificate.pem'),
+diff --git a/desktop/main.ts b/desktop/main.ts
+index 6e14d661b3..19ae999b7f 100644
+--- a/desktop/main.ts
++++ b/desktop/main.ts
+@@ -96,7 +96,7 @@ Object.assign(console, log.functions);
+ // until it detects that it has been upgraded to the correct version.
+ 
+ const EXPECTED_UPDATE_VERSION_FLAG = '--expected-update-version';
+-const APP_DOMAIN = __DEV__ ? `https://dev.new.expensify.com:${port}` : 'app://-';
++const APP_DOMAIN = __DEV__ ? `http://localhost:${port}` : 'app://-';
+ 
+ let expectedUpdateVersion: string;
+ process.argv.forEach((arg) => {
+@@ -235,7 +235,7 @@ const mainWindow = (): Promise<void> => {
+     let deeplinkUrl: string;
+     let browserWindow: BrowserWindow;
+ 
+-    const loadURL = __DEV__ ? (win: BrowserWindow): Promise<void> => win.loadURL(`https://dev.new.expensify.com:${port}`) : serve({directory: `${__dirname}/www`});
++    const loadURL = __DEV__ ? (win: BrowserWindow): Promise<void> => win.loadURL(`http://localhost:${port}`) : serve({directory: `${__dirname}/www`});
+ 
+     // Prod and staging set the icon in the electron-builder config, so only update it here for dev
+     if (__DEV__) {
+diff --git a/desktop/start.ts b/desktop/start.ts
+index 030bee95ce..7f7e115cf3 100644
+--- a/desktop/start.ts
++++ b/desktop/start.ts
+@@ -34,7 +34,7 @@ portfinder
+                 env,
+             },
+             {
+-                command: `wait-port dev.new.expensify.com:${port} && npx electronmon ./desktop/dev.js`,
++                command: `wait-port localhost:${port} && npx electronmon ./desktop/dev.js`,
+                 name: 'Electron',
+                 prefixColor: 'cyan.dim',
+                 env,
+diff --git a/src/CONST.ts b/src/CONST.ts
+index 0fa1c64be4..fa1408a729 100755
+--- a/src/CONST.ts
++++ b/src/CONST.ts
+@@ -563,7 +563,7 @@ const CONST = {
+     LIST_OF_RESTRICTED_BUSINESSES: 'https://community.expensify.com/discussion/6191/list-of-restricted-businesses',
+ 
+     // Use Environment.getEnvironmentURL to get the complete URL with port number
+-    DEV_NEW_EXPENSIFY_URL: 'https://dev.new.expensify.com:',
++    DEV_NEW_EXPENSIFY_URL: 'http://localhost:',
+     OLDDOT_URLS: {
+         ADMIN_POLICIES_URL: 'admin_policies',
+         ADMIN_DOMAINS_URL: 'admin_domains',
+diff --git a/src/libs/Navigation/linkingConfig/index.ts b/src/libs/Navigation/linkingConfig/index.ts
+index 95fe2f3b6c..215f51a77a 100644
+--- a/src/libs/Navigation/linkingConfig/index.ts
++++ b/src/libs/Navigation/linkingConfig/index.ts
+@@ -20,7 +20,7 @@ const linkingConfig: LinkingOptions<RootStackParamList> = {
+         'new-expensify://',
+         'https://www.expensify.cash',
+         'https://staging.expensify.cash',
+-        'https://dev.new.expensify.com',
++        'http://localhost',
+         CONST.NEW_EXPENSIFY_URL,
+         CONST.STAGING_NEW_EXPENSIFY_URL,
+     ],
