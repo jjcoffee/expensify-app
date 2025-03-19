@@ -8,7 +8,6 @@ workflows:
             - mapbox_sdk
           node: v16.15.1
           npm: v8.11.0
-          ruby: 3.3.4
         cache:
           cache_paths:
             - $HOME/.gradle/caches
@@ -109,7 +108,6 @@ workflows:
             - github_vars
           node: v20.10.0
           npm: v10.2.3
-          ruby: 3.3.4
           xcode: 15.0
           cocoapods: default
         scripts:
@@ -124,9 +122,11 @@ workflows:
                 export NVM_DIR="$HOME/.nvm"
                 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
                 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion    
-            - name: Install npm dependencies
+            - name: Install npm & dependencies
               script: |
                 nvm install
+                brew upgrade ruby-build
+                rbenv install 3.3.4 && rbenv global 3.3.4
                 bundle install
                 npm install
             - name: Set up Mapbox SDK
