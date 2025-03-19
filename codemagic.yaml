@@ -6,14 +6,9 @@ workflows:
         environment:
           groups: 
             - mapbox_sdk
-          #android_signing:
-          #  - keystore_reference
-          #groups:
-          #  - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
-          # vars:
-          #   PACKAGE_NAME: "com.expensify.chat"
           node: v16.15.1
           npm: v8.11.0
+          ruby: v3.3.4
         cache:
           cache_paths:
             - $HOME/.gradle/caches
@@ -114,6 +109,7 @@ workflows:
             - github_vars
           node: v20.10.0
           npm: v10.2.3
+          ruby: v3.3.4
           xcode: 15.0
           cocoapods: default
         scripts:
